@@ -48,6 +48,7 @@ void handle_interrupt(struct registers *regs) {
         memset(timer, 0, 32);
         itoa(++timer_tick_count,timer);
         kputs(timer, make_color(LIGHT_CYAN, BLACK, 0), 0, 20);
+        outb(0x20, 0x20); 
         return;
     }
     memset(timer, 0, 32);

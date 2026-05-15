@@ -50,10 +50,6 @@ do_isr_common:
     mov fs, ax
     mov gs, ax
    
-   ;NOTE: WE NEED TO CHANGE THIS LATER!!! fine for now but HORRIFIC practice to leave this here because the PIC isn't involved in all interrupts.
-    mov al, 0x20
-    out 0x20, al ; Send End of Interrupt (EOI) to PIC
-
     popad
     add esp, 8 ; Clean up error code and interrupt number
     iret
