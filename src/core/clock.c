@@ -3,12 +3,29 @@
 #include <stdlib.h>
 #include <vga.h>
 #include <io.h>
+
 static char timer[32] = {0};
+
+/*
+ * note: the x86 PIT has an input frequency of 1193182hz
+ * we can change it by sending a divisor = 1193182/target_freq to io port 0x43 data port 0x40
+ */
+#define PIT_INPUT_FREQ 1193182
+#define TARGET_FREQ 100
+void init_timer() {
+	uint16_t divisor = PIT_INPUT_FREQ / TARGET_FREQ;
+	outb(0x43, 0x36); // command byte: channel 0, access mode lobyte/hibyte, mode 3 (square wave), binary mode
+	outb(0x40, divisor & 0xFF); // send low byte of divisor
+	outb(0x40, (divisor >> 8) & 0xFF); // send high byte of divisor
+}
+
 void handle_timer_interrupt(struct registers *regs) {
 	static int timer_tick_count = 0;
-	memset(timer, 0, 32);
-	itoa(++timer_tick_count,timer);
-	kputs(timer, make_color(LIGHT_CYAN, BLACK, 0), 0, 20);
+	itoa((++timer_tick_count)/100,timer);
+	kputs("uptime (s):", make_color(LIGHT_CYAN, BLACK, 0), 0, 20);
+	kputs(timer, make_color(LIGHT_CYAN, BLACK, 0), 12, 20);
 	outb(0x20, 0x20); 
 	return;
 }
+
+
