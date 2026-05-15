@@ -18,7 +18,7 @@ void keyboard_init() {
 	outb(0x64, 0x20); // send command to read controller configuration byte
 	uint8_t config = inb(0x60); // read the configuration byte
 	outb(0x64, 0x60); // send command to write controller configuration byte
-	outb(0x60, config & 0b1); // clear bit 4 to enable keyboard interrupts
+	outb(0x60, config | 0b1); // clear bit 4 to enable keyboard interrupts
 	
 }
 
