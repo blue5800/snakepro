@@ -26,8 +26,8 @@ enum VGA_COLOR {
 
 char make_color(enum VGA_COLOR fg, enum VGA_COLOR bg, int blink);
 
-void put_char(char c, char color, int x, int y); 
+void put_char(char c, char color, int x, int y);
 
 void clear_screen(char color);
+void kputs(const char* str, char color, int x, int y);
 
-void kputs(const char* str, char color, int x, int y); 

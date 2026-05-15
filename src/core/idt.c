@@ -7,24 +7,7 @@
 #define SLAVE_PIC_DATA     0xA1
 
 #include <idt.h>
-
-
-static inline uint8_t inb(uint16_t port) {
-    uint8_t ret;
-    __asm__ volatile ("inb %1, %0" : "=a"(ret) : "Nd"(port));
-    return ret;
-}
-
-static inline void io_wait() {
-    __asm__ volatile ("outb %%al, $0x80" : : "a"(0));
-}
-
-static inline void outb(uint16_t port, uint8_t value) {
-    __asm__ volatile ("outb %0, %1" : : "a"(value), "Nd"(port));
-    io_wait();
-}
-
-
+#include <io.h>
 
 static void PIC_remap(int offset1, int offset2) {
     // save the current masks
@@ -53,6 +36,10 @@ static void PIC_remap(int offset1, int offset2) {
 }
 
 extern void isr0(); // declare the ISR handler for interrupt 0
+extern void isr1(); // declare the ISR handler for interrupt 1
+extern void isr8(); 
+extern void isr13();
+extern void isr32();
 
 __attribute__((aligned(0x10))) static struct idt_entry idt[256];
 struct idt_ptr idt_ptr;
@@ -75,10 +62,17 @@ void idt_install(){
     }
     
     idt_set_gate(0, (uint32_t)isr0, 0x08, 0x8E);
+    idt_set_gate(1, (uint32_t)isr1, 0x08, 0x8E);
+    idt_set_gate(8, (uint32_t)isr8, 0x08, 0x8E);
+    idt_set_gate(13, (uint32_t)isr13, 0x08, 0x8E);
+    idt_set_gate(32, (uint32_t)isr32, 0x08, 0x8E);
 
     PIC_remap(0x20, 0x28);
 
     __asm__ volatile ("lidt (%0)" : : "r" (&idt_ptr));
+
+    //enable interrupts
+    __asm__ volatile ("sti");
 }
 
 
