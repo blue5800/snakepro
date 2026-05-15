@@ -40,6 +40,8 @@ extern void isr1(); // declare the ISR handler for interrupt 1
 extern void isr8(); 
 extern void isr13();
 extern void isr32();
+extern void isr33();
+extern void isr34();
 
 __attribute__((aligned(0x10))) static struct idt_entry idt[256];
 struct idt_ptr idt_ptr;
@@ -66,6 +68,8 @@ void idt_install(){
     idt_set_gate(8, (uint32_t)isr8, 0x08, 0x8E);
     idt_set_gate(13, (uint32_t)isr13, 0x08, 0x8E);
     idt_set_gate(32, (uint32_t)isr32, 0x08, 0x8E);
+    idt_set_gate(33, (uint32_t)isr33, 0x08, 0x8E);
+    idt_set_gate(34, (uint32_t)isr34, 0x08, 0x8E);
 
     PIC_remap(0x20, 0x28);
 

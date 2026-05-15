@@ -22,6 +22,8 @@ ISR_NOERR 1 ; Debug
 ISR_ERR 8 ; Double Fault
 ISR_ERR 13 ; General Protection Fault
 ISR_NOERR 32 ; Timer
+ISR_NOERR 33 ; Keyboard
+ISR_NOERR 34 ; Serial Port 1
 ;--- enough of this
 
 do_isr_common:
@@ -47,6 +49,10 @@ do_isr_common:
     mov es, ax
     mov fs, ax
     mov gs, ax
+   
+   ;NOTE: WE NEED TO CHANGE THIS LATER!!! fine for now but HORRIFIC practice to leave this here because the PIC isn't involved in all interrupts.
+    mov al, 0x20
+    out 0x20, al ; Send End of Interrupt (EOI) to PIC
 
     popad
     add esp, 8 ; Clean up error code and interrupt number
