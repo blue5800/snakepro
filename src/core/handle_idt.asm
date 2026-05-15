@@ -32,8 +32,11 @@ do_isr_common:
     mov es, ax
     mov fs, ax
     mov gs, ax
-
+    
+    ;push and pop the stack pointer so the interrupt handler can actually use it (duh)
+    push esp
     call handle_interrupt
+    add esp, 4
     
     pop eax
     mov ds, ax
