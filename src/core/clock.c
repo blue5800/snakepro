@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <vga.h>
 #include <io.h>
-
+#include <keyboard.h>
 static char timer[32] = {0};
 
 uint32_t ticks = 0;
@@ -25,7 +25,7 @@ void init_timer() {
 }
 
 void handle_timer_interrupt(struct registers *regs) {
-	++ticks;
+	if (!is_paused()) ++ticks;
 	outb(0x20, 0x20); 
 	return;
 }

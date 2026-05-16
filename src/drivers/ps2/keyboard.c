@@ -4,6 +4,7 @@
 #include <keyboard.h>
 #include <vga.h>
 #include <stdlib.h>
+#include <movement.h>
 
 #define KEY_RELEASE_MASK 0x80
 #define KEYBOARD_DATA_PORT 0x60
@@ -22,6 +23,8 @@ uint8_t last_pressed_key;
 uint8_t pause_wait_for_reset = 0;
 uint8_t pause_state = 0;
 
+enum MOVEMENT current_movement = MOVE_NONE;
+
 void handle_keyboard_interrupt(struct registers *regs){
 
         uint8_t status = inb(KEYBOARD_STATUS_PORT);
@@ -35,6 +38,21 @@ void handle_keyboard_interrupt(struct registers *regs){
                     pause_wait_for_reset = 1;
                     pause_state = !pause_state; // toggle pause state
                 }
+
+                //handle movement keys
+                if (scancode == KEY_W) {
+                    current_movement = MOVE_UP;
+                }
+                else if (scancode == KEY_A) {
+                    current_movement = MOVE_LEFT;
+                }
+                else if (scancode == KEY_S) {
+                    current_movement = MOVE_DOWN;
+                }
+                else if (scancode == KEY_D) {
+                    current_movement = MOVE_RIGHT;
+                }
+
             }
             else {
                 key_pressed[scancode & ~KEY_RELEASE_MASK] = 0;

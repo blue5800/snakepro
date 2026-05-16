@@ -30,4 +30,5 @@ void put_char(char c, char color, int x, int y);
 
 void clear_screen(char color);
 void kputs(const char* str, char color, int x, int y);
-
+void draw_border();
+void render_frame();
