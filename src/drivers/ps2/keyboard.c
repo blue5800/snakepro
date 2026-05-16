@@ -19,6 +19,9 @@ static char val_str_buffer[32] = {0};
 uint8_t key_pressed[128];
 uint8_t last_pressed_key;
 
+uint8_t pause_wait_for_reset = 0;
+uint8_t pause_state = 0;
+
 void handle_keyboard_interrupt(struct registers *regs){
 
         uint8_t status = inb(KEYBOARD_STATUS_PORT);
@@ -27,9 +30,18 @@ void handle_keyboard_interrupt(struct registers *regs){
             if ((scancode & KEY_RELEASE_MASK) == 0) {
                 key_pressed[scancode] = 1;
                 last_pressed_key = scancode;
+                
+                if (scancode == KEY_P && !pause_wait_for_reset) {
+                    pause_wait_for_reset = 1;
+                    pause_state = !pause_state; // toggle pause state
+                }
             }
             else {
                 key_pressed[scancode & ~KEY_RELEASE_MASK] = 0;
+
+                if ((scancode & ~KEY_RELEASE_MASK) == KEY_P) {
+                    pause_wait_for_reset = 0;
+                }
             }
 
             kputs("                                     ", make_color(LIGHT_GREEN, BLACK, 0), 20, 20); //dirty hack to clear previous scancode
@@ -41,5 +53,9 @@ void handle_keyboard_interrupt(struct registers *regs){
         outb(0x20, 0x20); // send End of Interrupt (EOI) signal to PIC
         
         return;	
+}
+
+uint8_t is_paused(){
+    return pause_state;
 }
 

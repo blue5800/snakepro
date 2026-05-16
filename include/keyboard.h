@@ -13,4 +13,5 @@ enum KEYBOARD_KEYS {
 };
 extern uint8_t key_pressed[128];
 extern uint8_t last_pressed_key;
+uint8_t is_paused();
 void handle_keyboard_interrupt(struct registers *regs);
