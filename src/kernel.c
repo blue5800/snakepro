@@ -4,6 +4,7 @@
 #include <keyboard.h>
 #include <stdlib.h>
 #include <movement.h>
+#include <game.h>
 
 char uptime_str[32] = {0};
 void kernel_main(){
@@ -11,6 +12,7 @@ void kernel_main(){
     idt_install();
     while(1){
         draw_border();
+
         kputs("uptime (s): ",  make_color(LIGHT_CYAN, BLACK, 0) , 0, 0);
         uint32_t uptime = get_ticks() / TARGET_FREQ;
         itoa(uptime, uptime_str);
@@ -18,9 +20,6 @@ void kernel_main(){
 
         if (is_paused()) {
             kputs("PAUSED", make_color(LIGHT_RED, BLACK, 0), 74, 0);
-        }
-        else {
-            //kputs("      ", make_color(LIGHT_CYAN, BLACK, 0), 74, 0); 
         }
 
         switch (current_movement) {
@@ -39,6 +38,7 @@ void kernel_main(){
             default:
                 kputs("NONE ", make_color(LIGHT_GREEN, BLACK, 0), 0, 1);
         }
+        update_game_state();
         render_frame();
     }
 }
