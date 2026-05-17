@@ -12,6 +12,7 @@ void kernel_main(){
     idt_install();
     srand(get_ticks());
     while(1){
+        clear_screen(make_color(BLACK, BLACK, 0));
         draw_border();
 
         kputs("uptime (s): ",  make_color(LIGHT_CYAN, BLACK, 0) , 0, 0);
