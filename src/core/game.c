@@ -17,8 +17,21 @@ static inline uint8_t apple_spawned() {
 }
 
 static inline void spawn_apple() {
+retry:
 	apple.x = (rand() % 78) + 1;
 	apple.y = (rand() % 22) + 1;
+	//make sure we're not touching the snake with the apple
+	struct Point *current = tail;
+	while (current != head) {
+		if (current->x == apple.x && current->y == apple.y) {
+			goto retry;
+		}
+		current = snake + ((current - snake + 1) % 1715);
+	}
+	if (head->x == apple.x && head->y == apple.y) {
+		goto retry;
+	}
+
 }
 
 static inline uint8_t is_eating_apple() {
@@ -109,4 +122,16 @@ void update_game_state() {
 
 	kputs("@", make_color(LIGHT_RED, BLACK, 0), apple.x, apple.y);
 
+}
+
+void reset_game() {
+	head = snake + 1;
+	tail = snake;
+	apple.x = 0;
+	apple.y = 0;
+	head->x = 40;
+	head->y = 12;
+	tail->x = 0;
+	tail->y = 0;
+	current_movement = MOVE_NONE;
 }

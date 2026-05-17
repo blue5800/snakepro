@@ -10,3 +10,4 @@ struct Point {
 // for now, i just want a moving snake lmao
 
 void update_game_state();
+void reset_game();

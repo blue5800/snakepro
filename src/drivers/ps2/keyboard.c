@@ -5,6 +5,7 @@
 #include <vga.h>
 #include <stdlib.h>
 #include <movement.h>
+#include <game.h>
 
 #define KEY_RELEASE_MASK 0x80
 #define KEYBOARD_DATA_PORT 0x60
@@ -34,6 +35,12 @@ void handle_keyboard_interrupt(struct registers *regs){
                 key_pressed[scancode] = 1;
                 last_pressed_key = scancode;
                 
+                if ((scancode & ~KEY_RELEASE_MASK) == KEY_R) {
+                    reset_game();
+                    pause_state = 0;
+                    pause_wait_for_reset = 0;
+                }
+
                 if (scancode == KEY_P && !pause_wait_for_reset) {
                     pause_wait_for_reset = 1;
                     pause_state = !pause_state; // toggle pause state
