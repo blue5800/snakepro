@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <clock.h>
 
 void itoa(int value, char* buffer) {
     int i = 0;
@@ -39,4 +40,16 @@ void itoh(int value, char* buffer) {
         buffer[j] = buffer[i - j - 1];
         buffer[i - j - 1] = temp;
     }
+}
+
+int srand_seed;
+
+void srand(unsigned int seed) {
+    // simple linear congruential generator
+    srand_seed = seed;
+}
+
+int rand() {
+    srand_seed = (srand_seed * 1103515245 + 12345) & 0x7fffffff;
+    return (srand_seed % (RAND_MAX - RAND_MIN + 1)) + RAND_MIN;
 }

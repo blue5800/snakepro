@@ -10,6 +10,7 @@ char uptime_str[32] = {0};
 void kernel_main(){
     init_timer(); 
     idt_install();
+    srand(get_ticks());
     while(1){
         draw_border();
 
