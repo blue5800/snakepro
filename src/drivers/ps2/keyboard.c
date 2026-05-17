@@ -61,11 +61,6 @@ void handle_keyboard_interrupt(struct registers *regs){
                     pause_wait_for_reset = 0;
                 }
             }
-
-            kputs("                                     ", make_color(LIGHT_GREEN, BLACK, 0), 20, 20); //dirty hack to clear previous scancode
-            kputs(" last pressed: 0x", make_color(LIGHT_GREEN, BLACK, 0), 23, 20);
-            itoh(last_pressed_key, val_str_buffer);
-            kputs(val_str_buffer, make_color(LIGHT_GREEN, BLACK, 0), 40, 20);
         }
 
         outb(0x20, 0x20); // send End of Interrupt (EOI) signal to PIC

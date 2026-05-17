@@ -10,10 +10,10 @@ char uptime_str[32] = {0};
 void kernel_main(){
     init_timer(); 
     idt_install();
-    srand(get_ticks());
     while(1){
         clear_screen(make_color(BLACK, BLACK, 0));
         draw_border();
+        srand(get_ticks());
 
         kputs("uptime (s): ",  make_color(LIGHT_CYAN, BLACK, 0) , 0, 0);
         uint32_t uptime = get_ticks() / TARGET_FREQ;
