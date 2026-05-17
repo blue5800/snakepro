@@ -4,6 +4,9 @@
 struct Point apple = {0,0};
 
 // our snake can have a max length of (78*22) - 1 = 1715 
+#define MAX_ROWS 22
+#define MAX_COLS 78
+#define MAX_SNAKE_LENGTH (MAX_ROWS * MAX_COLS - 1)
 struct Point snake[1715] = {{0,0},{40, 12}};
 
 struct Point *head = (snake + 1);
@@ -31,6 +34,19 @@ static inline uint8_t is_out_of_bounds() {
 	}
 	return 0;
 }
+
+static inline uint8_t snake_intersects_self() {
+	if ((head - tail) == 1) return 0;
+	struct Point *start = tail;
+	while (start != head) {
+		if (head->x == start->x && head->y == start->y) {
+			return 1;
+		}
+		start = snake + ((start - snake + 1) % 1715);
+	}
+	return 0;
+}
+
 static inline void update_head() {
 	struct Point *new_head = snake + ((head - snake + 1) % 1715);
 	new_head->x = head->x;
@@ -76,7 +92,7 @@ void draw_snake() {
 uint32_t current_tick = 0;
 
 void update_game_state() {
-	if (is_out_of_bounds()) {
+	if (is_out_of_bounds() || snake_intersects_self()) {
 		kputs("loser", make_color(LIGHT_RED, BLACK, 0), 35, 12);
 		return;	
 	}

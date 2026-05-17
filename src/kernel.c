@@ -23,23 +23,6 @@ void kernel_main(){
         if (is_paused()) {
             kputs("PAUSED", make_color(LIGHT_RED, BLACK, 0), 74, 0);
         }
-
-        switch (current_movement) {
-            case MOVE_UP:
-                kputs("UP   ", make_color(LIGHT_GREEN, BLACK, 0), 0, 1);
-                break;
-            case MOVE_DOWN:
-                kputs("DOWN ", make_color(LIGHT_GREEN, BLACK, 0), 0, 1);
-                break;
-            case MOVE_LEFT:
-                kputs("LEFT ", make_color(LIGHT_GREEN, BLACK, 0), 0, 1);
-                break;
-            case MOVE_RIGHT:
-                kputs("RIGHT", make_color(LIGHT_GREEN, BLACK, 0), 0, 1);
-                break;
-            default:
-                kputs("NONE ", make_color(LIGHT_GREEN, BLACK, 0), 0, 1);
-        }
         update_game_state();
         render_frame();
     }
