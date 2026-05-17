@@ -45,6 +45,18 @@ void handle_keyboard_interrupt(struct registers *regs){
                     pause_wait_for_reset = 1;
                     pause_state = !pause_state; // toggle pause state
                 }
+                
+                //up and down keys adjust game speed multiplier
+                if (scancode == KEY_UP) {
+                    if (game_speed_multiplier < 20) {
+                        game_speed_multiplier += 1;
+                    }
+                }
+                else if (scancode == KEY_DOWN) {
+                    if (game_speed_multiplier > 8) {
+                        game_speed_multiplier -= 1;
+                    }
+                }
 
                 //handle movement keys
                 if (scancode == KEY_W && current_movement != MOVE_DOWN) {

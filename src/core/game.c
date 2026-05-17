@@ -4,6 +4,9 @@
 struct Point apple = {0,0};
 
 // our snake can have a max length of (78*22) - 1 = 1715 
+
+uint32_t game_speed_multiplier = 10;
+
 #define MAX_ROWS 22
 #define MAX_COLS 78
 #define MAX_SNAKE_LENGTH (MAX_ROWS * MAX_COLS - 1)
@@ -103,15 +106,14 @@ void draw_snake() {
 }
 
 uint32_t current_tick = 0;
-
 void update_game_state() {
 	if (is_out_of_bounds() || snake_intersects_self()) {
 		kputs("loser", make_color(LIGHT_RED, BLACK, 0), 35, 12);
 		return;	
 	}
-
-	if (get_ticks()*10 / TARGET_FREQ > current_tick && !is_paused()) {
-		current_tick = get_ticks()*10 / TARGET_FREQ;
+	uint32_t sync_ticks = get_ticks()*game_speed_multiplier / TARGET_FREQ;
+	if (sync_ticks > current_tick && !is_paused()) {
+		current_tick = sync_ticks;
 		move_snake(current_movement);
 
 	}
@@ -134,4 +136,5 @@ void reset_game() {
 	tail->x = 0;
 	tail->y = 0;
 	current_movement = MOVE_NONE;
+	current_tick = 0;
 }
