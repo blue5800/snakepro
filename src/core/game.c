@@ -41,6 +41,13 @@ retry:
 
 }
 
+static inline uint16_t snake_length() {
+	if (head >= tail) {
+		return head - tail + 1;
+	}
+	return MAX_SNAKE_LENGTH - (tail - head) + 1;
+}
+
 static inline uint8_t is_eating_apple() {
 	if (head->x == apple.x && head->y == apple.y) {
 		return 1;
@@ -56,8 +63,6 @@ static inline uint8_t is_out_of_bounds() {
 }
 
 static inline uint8_t snake_intersects_self() {
-	//if ((head - tail) == 1) return 0;
-	//struct Point *start = tail;
 	struct Point *start = snake + ((tail - snake + 1) % MAX_SNAKE_LENGTH);
 	while (start != head) {
 		if (head->x == start->x && head->y == start->y) {
@@ -102,6 +107,8 @@ void move_snake(enum MOVEMENT dir) {
 
 void draw_snake() {
 	struct Point *current = head;
+	kputs("O", make_color(YELLOW, BLACK, 0), current->x, current->y);
+	current = snake + ((current - snake - 1 + MAX_SNAKE_LENGTH) % MAX_SNAKE_LENGTH);
 	while (current != tail) {
 		kputs("O", make_color(LIGHT_GREEN, BLACK, 0), current->x, current->y);
 		current = snake + ((current - snake - 1 + MAX_SNAKE_LENGTH) % MAX_SNAKE_LENGTH);
@@ -109,10 +116,19 @@ void draw_snake() {
 }
 
 void update_game_state() {
+
 	if (is_out_of_bounds() || snake_intersects_self()) {
-		kputs("loser", make_color(LIGHT_RED, BLACK, 0), 35, 12);
+		kputs("loser", make_color(LIGHT_RED, BLACK, 0), 36, 12);
+		kputs("press R to restart", make_color(LIGHT_RED, BLACK, 0), 30, 13);
 		return;
 	}
+	
+	if (snake_length() == MAX_SNAKE_LENGTH) {
+		kputs("winer", make_color(LIGHT_GREEN, BLACK, 0), 36, 12);
+		kputs("press R to restart", make_color(LIGHT_RED, BLACK, 0), 30, 13);
+		return;
+	}
+	
 	uint32_t sync_ticks = get_ticks()*game_speed_multiplier / TARGET_FREQ;
 	if (sync_ticks > current_tick && !is_paused()) {
 		current_tick = sync_ticks;
