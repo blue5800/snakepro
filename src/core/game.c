@@ -16,6 +16,8 @@ struct Point snake[1715] = {{0,0},{40, 12}};
 struct Point *head = (snake + 1);
 struct Point *tail = snake;
 
+enum MOVEMENT last_ticked_movement = MOVE_NONE;
+
 static inline uint8_t apple_spawned() {
 	return apple.x != 0 || apple.y != 0;
 }
@@ -71,11 +73,18 @@ static inline void update_head() {
 	head = new_head;
 }
 
+static inline uint8_t legal_direction() {
+	return (current_movement == MOVE_UP && last_ticked_movement != MOVE_DOWN) ||
+		   (current_movement == MOVE_DOWN && last_ticked_movement != MOVE_UP) ||
+		   (current_movement == MOVE_LEFT && last_ticked_movement != MOVE_RIGHT) ||
+		   (current_movement == MOVE_RIGHT && last_ticked_movement != MOVE_LEFT);
+}
+
 void move_snake(enum MOVEMENT dir) {
 	// when we move the snake, simply enqueue a new head, and if we are not growing, dequeue the tail
 	update_head();
-
-	switch (dir) {
+	last_ticked_movement = legal_direction() ? current_movement : last_ticked_movement;
+	switch (last_ticked_movement) {
 	case MOVE_UP:
 		head->x = head[-1].x;
 		head->y = head[-1].y - 1;
@@ -136,5 +145,6 @@ void reset_game() {
 	tail->x = 0;
 	tail->y = 0;
 	current_movement = MOVE_NONE;
+	last_ticked_movement = MOVE_NONE;
 	current_tick = 0;
 }

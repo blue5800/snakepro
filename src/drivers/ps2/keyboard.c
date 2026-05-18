@@ -21,7 +21,9 @@ static char val_str_buffer[32] = {0};
 * by adjusting M by adding delta d we get x' = t * (M + d) / T
 * we need to find x' in terms of x, M, and d. 
 * subsituting t we get x' = (m + d) *xT/MT = x * (M + d) / M
-* this is all the simplification that's needed really 
+* this is all the simplification that's needed really
+* one issue we still have is that it doesn't reset the timestep so the first tick might feel a bit off
+* good enough. 
 */
 static inline void renormalise_game_tick(int8_t delta){
     current_tick = (current_tick * (game_speed_multiplier + delta)) / game_speed_multiplier;
@@ -74,16 +76,16 @@ void handle_keyboard_interrupt(struct registers *regs){
                 }
 
                 //handle movement keys
-                if (scancode == KEY_W && current_movement != MOVE_DOWN) {
+                if (scancode == KEY_W && last_ticked_movement != MOVE_DOWN) {
                     current_movement = MOVE_UP;
                 }
-                else if (scancode == KEY_A && current_movement != MOVE_RIGHT) {
+                else if (scancode == KEY_A && last_ticked_movement != MOVE_RIGHT) {
                     current_movement = MOVE_LEFT;
                 }
-                else if (scancode == KEY_S && current_movement != MOVE_UP) {
+                else if (scancode == KEY_S && last_ticked_movement != MOVE_UP) {
                     current_movement = MOVE_DOWN;
                 }
-                else if (scancode == KEY_D && current_movement != MOVE_LEFT) {
+                else if (scancode == KEY_D && last_ticked_movement != MOVE_LEFT) {
                     current_movement = MOVE_RIGHT;
                 }
 

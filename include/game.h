@@ -8,6 +8,7 @@ struct Point {
 };
 
 // for now, i just want a moving snake lmao
+extern enum MOVEMENT last_ticked_movement;
 extern uint32_t game_speed_multiplier;
 extern uint32_t current_tick;
 
