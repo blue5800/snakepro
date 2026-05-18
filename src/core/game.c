@@ -3,7 +3,8 @@
 #include <stdlib.h>
 struct Point apple = {0,0};
 
-// our snake can have a max length of (78*22) - 1 = 1715 
+// our snake can have a max length of (78*23) - 1 = 1793
+// we know this ahead of time, no need for malloc. we stay winning
 
 uint32_t game_speed_multiplier = 10;
 uint32_t current_tick = 0;
@@ -147,6 +148,7 @@ void update_game_state() {
 	}
 	
 	if (snake_length() == MAX_SNAKE_LENGTH) {
+		//lets not draw the snake here. honestly, what is there to see? a giant green mass?
 		kputs("winer", make_color(LIGHT_GREEN, BLACK, 0), 36, 12);
 		kputs("press R to restart", make_color(LIGHT_GREEN, BLACK, 0), 30, 14);
 		return;
