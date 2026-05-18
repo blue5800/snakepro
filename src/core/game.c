@@ -25,7 +25,7 @@ static inline uint8_t apple_spawned() {
 static inline void spawn_apple() {
 retry:
 	apple.x = (rand() % MAX_COLS) + 1;
-	apple.y = (rand() % MAX_ROWS) + 1;
+	apple.y = (rand() % MAX_ROWS+1) + 1;
 
 	//make sure we're not touching the snake with the apple	
 	struct Point *current = tail;
