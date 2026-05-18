@@ -11,9 +11,9 @@ uint32_t current_tick = 0;
 #define MAX_ROWS (23)
 #define MAX_COLS (78)
 #define MAX_SNAKE_LENGTH (MAX_ROWS * MAX_COLS - 1)
-struct Point snake[MAX_SNAKE_LENGTH] = {{0,0},{40, 12}};
+struct Point snake[MAX_SNAKE_LENGTH] = {{40, 12}};
 
-struct Point *head = (snake + 1);
+struct Point *head = (snake);
 struct Point *tail = snake;
 
 enum MOVEMENT last_ticked_movement = MOVE_NONE;
@@ -35,6 +35,7 @@ retry:
 		}
 		current = snake + ((current - snake + 1) % MAX_SNAKE_LENGTH);
 	}
+
 	if (head->x == apple.x && head->y == apple.y) {
 		goto retry;
 	}
@@ -63,7 +64,8 @@ static inline uint8_t is_out_of_bounds() {
 }
 
 static inline uint8_t snake_intersects_self() {
-	struct Point *start = snake + ((tail - snake + 1) % MAX_SNAKE_LENGTH);
+	if (head == tail) return 0;	
+	struct Point *start = tail;
 	while (start != head) {
 		if (head->x == start->x && head->y == start->y) {
 			return 1;
@@ -100,24 +102,42 @@ void move_snake(enum MOVEMENT dir) {
 	default:
 		break;
 	}
+
 	if (!is_eating_apple()) {
 		tail = snake + ((tail - snake + 1) % MAX_SNAKE_LENGTH);
 	}
 }
 
+
+char score_buffer[32];
+uint8_t game_lost = 0;
+
 void draw_snake() {
 	struct Point *current = head;
-	kputs("O", make_color(YELLOW, BLACK, 0), current->x, current->y);
+
+	uint8_t body_color = make_color(LIGHT_GREEN, BLACK, 0);
+
+	char snake_char[2];
+	snake_char[1] = '\0';
+	snake_char[0] = game_lost ? 'X' : 'O';
+
+	if (head == tail) goto draw_head;
+
 	current = snake + ((current - snake - 1 + MAX_SNAKE_LENGTH) % MAX_SNAKE_LENGTH);
-	while (current != tail) {
-		kputs("O", make_color(LIGHT_GREEN, BLACK, 0), current->x, current->y);
+	while (1) {
+		kputs(snake_char, body_color, current->x, current->y);
+		if (current == tail) break;
 		current = snake + ((current - snake - 1 + MAX_SNAKE_LENGTH) % MAX_SNAKE_LENGTH);
 	}
-}
-char score_buffer[32];
-void update_game_state() {
+draw_head:
+	kputs(snake_char, make_color(game_lost ? LIGHT_RED : YELLOW, BLACK, 0), head->x, head->y);
 
-	if (is_out_of_bounds() || snake_intersects_self()) {
+}
+
+void update_game_state() {
+	game_lost = is_out_of_bounds() || snake_intersects_self();
+	if (game_lost) {
+		draw_snake();
 		kputs("loser", make_color(LIGHT_RED, BLACK, 0), 36, 12);
 		kputs("score: ", make_color(LIGHT_RED, BLACK, 0), 35, 13);
 		itoa((snake_length()-1), score_buffer);
@@ -148,15 +168,14 @@ void update_game_state() {
 }
 
 void reset_game() {
-	head = snake + 1;
+	head = snake;
 	tail = snake;
 	apple.x = 0;
 	apple.y = 0;
 	head->x = 40;
 	head->y = 12;
-	tail->x = 0;
-	tail->y = 0;
 	current_movement = MOVE_NONE;
 	last_ticked_movement = MOVE_NONE;
 	current_tick = 0;
+	game_lost = 0;
 }
