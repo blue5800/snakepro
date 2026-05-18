@@ -26,6 +26,7 @@ void init_timer() {
 
 void handle_timer_interrupt(struct registers *regs) {
 	if (!is_paused()) ++ticks;
+	srand(ticks);
 	outb(0x20, 0x20); 
 	return;
 }

@@ -27,11 +27,6 @@ static inline uint8_t apple_spawned() {
 	return apple.x != 0 || apple.y != 0;
 }
 
-//not sure if i wanna modify game speed as things go. ill leave it out for now
-static inline void renormalise_game_tick(int8_t delta){
-    current_tick = (current_tick * (game_speed_multiplier + delta)) / game_speed_multiplier;
-}
-
 static inline void spawn_apple() {
 retry:
 	apple.x = (rand() % MAX_COLS) + 1;
