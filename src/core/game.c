@@ -43,9 +43,9 @@ retry:
 
 static inline uint16_t snake_length() {
 	if (head >= tail) {
-		return head - tail + 1;
+		return head - tail;
 	}
-	return MAX_SNAKE_LENGTH - (tail - head) + 1;
+	return MAX_SNAKE_LENGTH - (tail - head);
 }
 
 static inline uint8_t is_eating_apple() {
@@ -114,18 +114,21 @@ void draw_snake() {
 		current = snake + ((current - snake - 1 + MAX_SNAKE_LENGTH) % MAX_SNAKE_LENGTH);
 	}
 }
-
+char score_buffer[32];
 void update_game_state() {
 
 	if (is_out_of_bounds() || snake_intersects_self()) {
 		kputs("loser", make_color(LIGHT_RED, BLACK, 0), 36, 12);
-		kputs("press R to restart", make_color(LIGHT_RED, BLACK, 0), 30, 13);
+		kputs("score: ", make_color(LIGHT_RED, BLACK, 0), 35, 13);
+		itoa((snake_length()-1), score_buffer);
+		kputs(score_buffer, make_color(LIGHT_RED, BLACK, 0), 41, 13);
+		kputs("press R to restart", make_color(LIGHT_RED, BLACK, 0), 30, 14);
 		return;
 	}
 	
 	if (snake_length() == MAX_SNAKE_LENGTH) {
 		kputs("winer", make_color(LIGHT_GREEN, BLACK, 0), 36, 12);
-		kputs("press R to restart", make_color(LIGHT_RED, BLACK, 0), 30, 13);
+		kputs("press R to restart", make_color(LIGHT_GREEN, BLACK, 0), 30, 14);
 		return;
 	}
 	
