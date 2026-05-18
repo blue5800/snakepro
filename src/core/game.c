@@ -8,7 +8,7 @@ struct Point apple = {0,0};
 uint32_t game_speed_multiplier = 10;
 uint32_t current_tick = 0;
 
-#define MAX_ROWS (22)
+#define MAX_ROWS (23)
 #define MAX_COLS (78)
 #define MAX_SNAKE_LENGTH (MAX_ROWS * MAX_COLS - 1)
 struct Point snake[MAX_SNAKE_LENGTH] = {{0,0},{40, 12}};
@@ -25,7 +25,7 @@ static inline uint8_t apple_spawned() {
 static inline void spawn_apple() {
 retry:
 	apple.x = (rand() % MAX_COLS) + 1;
-	apple.y = (rand() % MAX_ROWS+1) + 1;
+	apple.y = (rand() % MAX_ROWS) + 1;
 
 	//make sure we're not touching the snake with the apple	
 	struct Point *current = tail;
@@ -43,9 +43,9 @@ retry:
 
 static inline uint16_t snake_length() {
 	if (head >= tail) {
-		return head - tail;
+		return head - tail + 1;
 	}
-	return MAX_SNAKE_LENGTH - (tail - head);
+	return MAX_SNAKE_LENGTH - (tail - head) + 1;
 }
 
 static inline uint8_t is_eating_apple() {
@@ -56,7 +56,7 @@ static inline uint8_t is_eating_apple() {
 }
 
 static inline uint8_t is_out_of_bounds() {
-	if (head->x <= 0 || head->x > MAX_COLS || head->y <= 0 || head->y > MAX_ROWS + 1) {
+	if (head->x <= 0 || head->x > MAX_COLS || head->y <= 0 || head->y > MAX_ROWS) {
 		return 1;
 	}
 	return 0;
