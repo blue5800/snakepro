@@ -8,10 +8,10 @@ struct Point apple = {0,0};
 uint32_t game_speed_multiplier = 10;
 uint32_t current_tick = 0;
 
-#define MAX_ROWS 22
-#define MAX_COLS 78
+#define MAX_ROWS (22)
+#define MAX_COLS (78)
 #define MAX_SNAKE_LENGTH (MAX_ROWS * MAX_COLS - 1)
-struct Point snake[1715] = {{0,0},{40, 12}};
+struct Point snake[MAX_SNAKE_LENGTH] = {{0,0},{40, 12}};
 
 struct Point *head = (snake + 1);
 struct Point *tail = snake;
@@ -24,15 +24,16 @@ static inline uint8_t apple_spawned() {
 
 static inline void spawn_apple() {
 retry:
-	apple.x = (rand() % 78) + 1;
-	apple.y = (rand() % 22) + 1;
-	//make sure we're not touching the snake with the apple
+	apple.x = (rand() % MAX_COLS) + 1;
+	apple.y = (rand() % MAX_ROWS) + 1;
+
+	//make sure we're not touching the snake with the apple	
 	struct Point *current = tail;
 	while (current != head) {
 		if (current->x == apple.x && current->y == apple.y) {
 			goto retry;
 		}
-		current = snake + ((current - snake + 1) % 1715);
+		current = snake + ((current - snake + 1) % MAX_SNAKE_LENGTH);
 	}
 	if (head->x == apple.x && head->y == apple.y) {
 		goto retry;
@@ -48,62 +49,54 @@ static inline uint8_t is_eating_apple() {
 }
 
 static inline uint8_t is_out_of_bounds() {
-	if (head->x <= 0 || head->x >= 79 || head->y <= 0 || head->y >= 24) {
+	if (head->x <= 0 || head->x > MAX_COLS || head->y <= 0 || head->y > MAX_ROWS + 1) {
 		return 1;
 	}
 	return 0;
 }
 
 static inline uint8_t snake_intersects_self() {
-	if ((head - tail) == 1) return 0;
-	struct Point *start = tail;
+	//if ((head - tail) == 1) return 0;
+	//struct Point *start = tail;
+	struct Point *start = snake + ((tail - snake + 1) % MAX_SNAKE_LENGTH);
 	while (start != head) {
 		if (head->x == start->x && head->y == start->y) {
 			return 1;
 		}
-		start = snake + ((start - snake + 1) % 1715);
+		start = snake + ((start - snake + 1) % MAX_SNAKE_LENGTH);
 	}
 	return 0;
 }
 
 static inline void update_head() {
-	struct Point *new_head = snake + ((head - snake + 1) % 1715);
+	struct Point *new_head = snake + ( (head - snake + 1) % MAX_SNAKE_LENGTH);
 	new_head->x = head->x;
 	new_head->y = head->y;
 	head = new_head;
 }
 
-static inline uint8_t legal_direction() {
-	return (current_movement == MOVE_UP && last_ticked_movement != MOVE_DOWN) ||
-		   (current_movement == MOVE_DOWN && last_ticked_movement != MOVE_UP) ||
-		   (current_movement == MOVE_LEFT && last_ticked_movement != MOVE_RIGHT) ||
-		   (current_movement == MOVE_RIGHT && last_ticked_movement != MOVE_LEFT);
-}
-
 void move_snake(enum MOVEMENT dir) {
 	// when we move the snake, simply enqueue a new head, and if we are not growing, dequeue the tail
 	update_head();
-	last_ticked_movement = legal_direction() ? current_movement : last_ticked_movement;
+	last_ticked_movement = current_movement;
 	switch (last_ticked_movement) {
 	case MOVE_UP:
-		head->x = head[-1].x;
-		head->y = head[-1].y - 1;
+		head->y -= 1;
 		break;
 	case MOVE_DOWN:
-		head->x = head[-1].x;
-		head->y = head[-1].y + 1;
+		head->y += 1;
 		break;
 	case MOVE_LEFT:
-		head->x = head[-1].x - 1;
-		head->y = head[-1].y;
+		head->x -= 1;
 		break;
 	case MOVE_RIGHT:
-		head->x = head[-1].x + 1;
-		head->y = head[-1].y;
+		head->x += 1;
+		break;
+	default:
 		break;
 	}
 	if (!is_eating_apple()) {
-		tail = snake + ((tail - snake + 1) % 1715);
+		tail = snake + ((tail - snake + 1) % MAX_SNAKE_LENGTH);
 	}
 }
 
@@ -111,14 +104,23 @@ void draw_snake() {
 	struct Point *current = head;
 	while (current != tail) {
 		kputs("O", make_color(LIGHT_GREEN, BLACK, 0), current->x, current->y);
-		current = snake + ((current - snake - 1 + 1715) % 1715);
+		current = snake + ((current - snake - 1 + MAX_SNAKE_LENGTH) % MAX_SNAKE_LENGTH);
 	}
 }
 
+char debug_str[32] = {0};
+char debug_str2[32] = {0};
 void update_game_state() {
+	// debug
+	itoa((head - snake), debug_str);
+	kputs(debug_str, make_color(RED,BLACK,0), 20,0);
+	
+	itoa((tail - snake), debug_str2);
+	kputs(debug_str2, make_color(RED,BLACK,0), 30,0);
+
 	if (is_out_of_bounds() || snake_intersects_self()) {
 		kputs("loser", make_color(LIGHT_RED, BLACK, 0), 35, 12);
-		return;	
+		//return;
 	}
 	uint32_t sync_ticks = get_ticks()*game_speed_multiplier / TARGET_FREQ;
 	if (sync_ticks > current_tick && !is_paused()) {
@@ -127,10 +129,10 @@ void update_game_state() {
 
 	}
 	draw_snake();
+
 	if (is_eating_apple() || !apple_spawned()) {
 		spawn_apple();
 	}
-
 	kputs("@", make_color(LIGHT_RED, BLACK, 0), apple.x, apple.y);
 
 }

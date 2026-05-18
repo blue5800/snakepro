@@ -28,6 +28,7 @@ static char val_str_buffer[32] = {0};
 static inline void renormalise_game_tick(int8_t delta){
     current_tick = (current_tick * (game_speed_multiplier + delta)) / game_speed_multiplier;
 }
+
 /*
  * we have the whole table, but we only need wasd, p, up, down, and r.
  * wasd for movement, up/down for gamespeed, p for pause and r for reset.
@@ -63,7 +64,7 @@ void handle_keyboard_interrupt(struct registers *regs){
                 
                 //up and down keys adjust game speed multiplier
                 if (scancode == KEY_UP) {
-                    if (game_speed_multiplier < 25) {
+                    if (game_speed_multiplier < 50) {
                         game_speed_multiplier += 1;
                         renormalise_game_tick(1);
                     }

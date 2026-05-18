@@ -53,3 +53,7 @@ int rand() {
     srand_seed = (srand_seed * 1103515245 + 12345) & 0x7fffffff;
     return (srand_seed % (RAND_MAX - RAND_MIN + 1)) + RAND_MIN;
 }
+
+int abs(int value){
+    return (value < 0) ? -value : value;
+}
