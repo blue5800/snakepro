@@ -19,8 +19,17 @@ struct Point *tail = snake;
 
 enum MOVEMENT last_ticked_movement = MOVE_NONE;
 
+uint32_t score = 0;
+char score_buffer[32];
+uint8_t game_lost = 0;
+
 static inline uint8_t apple_spawned() {
 	return apple.x != 0 || apple.y != 0;
+}
+
+//not sure if i wanna modify game speed as things go. ill leave it out for now
+static inline void renormalise_game_tick(int8_t delta){
+    current_tick = (current_tick * (game_speed_multiplier + delta)) / game_speed_multiplier;
 }
 
 static inline void spawn_apple() {
@@ -40,7 +49,7 @@ retry:
 	if (head->x == apple.x && head->y == apple.y) {
 		goto retry;
 	}
-
+	++score;
 }
 
 static inline uint16_t snake_length() {
@@ -110,9 +119,6 @@ void move_snake(enum MOVEMENT dir) {
 }
 
 
-char score_buffer[32];
-uint8_t game_lost = 0;
-
 void draw_snake() {
 	struct Point *current = head;
 
@@ -141,7 +147,7 @@ void update_game_state() {
 		draw_snake();
 		kputs("loser", make_color(LIGHT_RED, BLACK, 0), 36, 12);
 		kputs("score: ", make_color(LIGHT_RED, BLACK, 0), 35, 13);
-		itoa((snake_length()-1), score_buffer);
+		itoa(score-1, score_buffer);
 		kputs(score_buffer, make_color(LIGHT_RED, BLACK, 0), 41, 13);
 		kputs("press R to restart", make_color(LIGHT_RED, BLACK, 0), 30, 14);
 		return;
@@ -180,4 +186,5 @@ void reset_game() {
 	last_ticked_movement = MOVE_NONE;
 	current_tick = 0;
 	game_lost = 0;
+	score = 0;
 }
