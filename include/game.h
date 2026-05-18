@@ -9,5 +9,7 @@ struct Point {
 
 // for now, i just want a moving snake lmao
 extern uint32_t game_speed_multiplier;
+extern uint32_t current_tick;
+
 void update_game_state();
 void reset_game();

@@ -14,6 +14,19 @@
 static char val_str_buffer[32] = {0};
 
 /*
+* problem: basically when we adjust the ticks downwards. we get a situation where the saved one was calculated with the higher multiplier
+* this pauses the game, dependent on the already elapsed time, until the ticks with the new mulitplier catches up. need to scale the current value to accomodate
+* let x be the variable current ticks, M the multiplier, t the current time when it was taken, and T be the TARGET_FREQ:
+* x = t * M / T -> t = x * T / M
+* by adjusting M by adding delta d we get x' = t * (M + d) / T
+* we need to find x' in terms of x, M, and d. 
+* subsituting t we get x' = (m + d) *xT/MT = x * (M + d) / M
+* this is all the simplification that's needed really 
+*/
+static inline void renormalise_game_tick(int8_t delta){
+    current_tick = (current_tick * (game_speed_multiplier + delta)) / game_speed_multiplier;
+}
+/*
  * we have the whole table, but we only need wasd, p, up, down, and r.
  * wasd for movement, up/down for gamespeed, p for pause and r for reset.
  * since we aren't typing, we can use raw scancodes.
@@ -48,13 +61,15 @@ void handle_keyboard_interrupt(struct registers *regs){
                 
                 //up and down keys adjust game speed multiplier
                 if (scancode == KEY_UP) {
-                    if (game_speed_multiplier < 20) {
+                    if (game_speed_multiplier < 25) {
                         game_speed_multiplier += 1;
+                        renormalise_game_tick(1);
                     }
                 }
                 else if (scancode == KEY_DOWN) {
-                    if (game_speed_multiplier > 8) {
+                    if (game_speed_multiplier > 4) {
                         game_speed_multiplier -= 1;
+                        renormalise_game_tick(-1);
                     }
                 }
 
