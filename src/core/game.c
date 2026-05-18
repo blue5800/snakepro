@@ -108,19 +108,10 @@ void draw_snake() {
 	}
 }
 
-char debug_str[32] = {0};
-char debug_str2[32] = {0};
 void update_game_state() {
-	// debug
-	itoa((head - snake), debug_str);
-	kputs(debug_str, make_color(RED,BLACK,0), 20,0);
-	
-	itoa((tail - snake), debug_str2);
-	kputs(debug_str2, make_color(RED,BLACK,0), 30,0);
-
 	if (is_out_of_bounds() || snake_intersects_self()) {
 		kputs("loser", make_color(LIGHT_RED, BLACK, 0), 35, 12);
-		//return;
+		return;
 	}
 	uint32_t sync_ticks = get_ticks()*game_speed_multiplier / TARGET_FREQ;
 	if (sync_ticks > current_tick && !is_paused()) {
