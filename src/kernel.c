@@ -30,5 +30,6 @@ void kernel_main(){
         }
         update_game_state();
         render_frame();
+        __asm__ volatile ("sti; hlt");
     }
 }
