@@ -18,12 +18,10 @@
 ;--- ISRs for CPU exceptions (0-31)
 ISR_NOERR 0 ; Divide by Zero
 ISR_NOERR 1 ; Debug
-
 ISR_ERR 8 ; Double Fault
 ISR_ERR 13 ; General Protection Fault
 ISR_NOERR 32 ; Timer
 ISR_NOERR 33 ; Keyboard
-ISR_NOERR 34 ; Serial Port 1
 ;--- enough of this
 
 do_isr_common:
