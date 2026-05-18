@@ -171,7 +171,14 @@ void update_game_state() {
 	if (is_eating_apple() || !apple_spawned()) {
 		spawn_apple();
 	}
+
+	if (last_ticked_movement == MOVE_NONE) {
+		kputs("use WASD to move", make_color(LIGHT_MAGENTA, BLACK, 0), 32, 14);
+		kputs("press P to pause", make_color(LIGHT_MAGENTA, BLACK, 0), 32, 15);
+		kputs("use arrow up/down to change game speed", make_color(LIGHT_MAGENTA, BLACK, 0), 22, 16);
+	}
 	kputs("@", make_color(LIGHT_RED, BLACK, 0), apple.x, apple.y);
+
 
 }
 
